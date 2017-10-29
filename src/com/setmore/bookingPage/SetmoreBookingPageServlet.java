@@ -1,18 +1,17 @@
 package com.setmore.bookingPage;
 
-import java.io.IOException;
-import javax.servlet.http.*;
+
+import java.util.HashMap;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import com.setmore.bookingPage.URLFetchClass;
-;@Controller
+
+@Controller
 public class SetmoreBookingPageServlet  {
 	
 	ModelAndView model;
@@ -23,16 +22,14 @@ public class SetmoreBookingPageServlet  {
 	    return new ModelAndView("index");
 	}
 	
-	@RequestMapping(value="/bookingPage",method=RequestMethod.GET)
+	@RequestMapping(value="/service",method=RequestMethod.GET)
 	@ResponseBody
-	public String getStaff(@RequestBody String companyKey ) throws Exception{
-		System.out.println("company key " + companyKey);
+	public HashMap<String,Object> getService(@RequestBody String companyKey ) throws Exception{
 		
-		URLFetchClass classObj = new URLFetchClass();
-		String accessToken = classObj.getAccessToken();
-		String services    = classObj.getService(accessToken);
-		
-		
+		URLFetchClass urlclassObj             =  new URLFetchClass();
+		String accessToken                    =  urlclassObj.getAccessToken();
+		HashMap<String,Object> services      =   urlclassObj.getServiceDetails(accessToken);
+			
 		return services;	
 	
 	}

@@ -7,40 +7,33 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.net.ssl.HttpsURLConnection;
-
-import org.codehaus.jackson.map.JsonSerializer;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
-import com.google.appengine.labs.repackaged.org.json.JSONObject;
-
-import net.sf.json.JSONSerializer;
-
-
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 
 public class URLFetchClass {
 
-     
-	
-           Map<String,String> hashmap = new HashMap<String,String>();           
-           ObjectMapper objectmapper      = new ObjectMapper();
+    
            
-	
-           public String getAccessToken() throws IOException, JSONException{
+        public static void main(String[] args) throws Exception{
+        	URLFetchClass urlObj = new URLFetchClass();
+        	String token = urlObj.getAccessToken();
+        	urlObj.getServiceDetails(token);
         	
-        	   URL obj = new URL("https://developer.setmore.com/api/v1/o/oauth2/token?refreshToken=7af7d05d50SB3I6gYN6AosocWO_N3Tquz1s0w4_vNvnw8");
+        }
+	
+     public String getAccessToken() throws IOException, JSONException{
+        	
+        	   URL obj               = new URL("https://developer.setmore.com/api/v1/o/oauth2/token?refreshToken=7af7d05d50SB3I6gYN6AosocWO_N3Tquz1s0w4_vNvnw8");
         	   HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         	   con.setRequestMethod("GET");
         	   con.setRequestProperty("Content-Type", "application/json");
         	 
-        	 
-        	   BufferedReader in = new BufferedReader(
-        	   new InputStreamReader(con.getInputStream()));
+        	             
+               ObjectMapper objectmapper      =  new ObjectMapper();     	 
+        	   BufferedReader in              =  new BufferedReader(new InputStreamReader(con.getInputStream()));
         	   String inputLine;
         	   String response = "";
 
@@ -57,7 +50,9 @@ public class URLFetchClass {
         	    String accessToken = "";
         	   
         	    for(Map.Entry<String, Object> entry : hashmap.entrySet()){
+        	    	
         	    	String key = entry.getKey();
+        	    	
         	    	if(key.equals("data")){
         	    	     	    		
         	    		Map<String,Object> token = (Map<String, Object>) entry.getValue();
@@ -67,45 +62,52 @@ public class URLFetchClass {
         	    			   if( entryVal.getKey().equals("token")){
         	    			
         	    				      Map<String,Object> accessTokenValue = (Map<String, Object>) entryVal.getValue();
-        	    				          for(Map.Entry<String, Object> accessTokenEntry : accessTokenValue.entrySet()){
+        	    				          
+        	    				      for(Map.Entry<String, Object> accessTokenEntry : accessTokenValue.entrySet()){
 	        	    					      if(accessTokenEntry.getKey().equals("access_token"))
 	        	    						   accessToken = (String) accessTokenEntry.getValue();    	    						
-        	    				}
-        	    			}
-        	    			
-        	    		}
-        	    		
-        	    	}        	    	
-        	    }
-        	   System.out.println("accessToken " + accessToken);
+        	    				           }
+        	    			         }	
+        	    		      }	    		
+        	    	      }        	    	
+        	    	}
+        	  
         	   return accessToken;      	  
         	   
            }
 
-	public String getService(String Token) throws Exception {
+	public HashMap<String,Object> getServiceDetails(String Token) throws Exception {
 		
 		String url = "https://developer.setmore.com/api/v1/bookingapi/services";
 		String response="";
 		
 		System.out.println("the value of token inseide the get service " + Token);
 		URL obj = new URL(url);
-		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
 		con.setRequestMethod("GET");		
         con.setRequestProperty("Content-Type", "application/json");	 
-        con.setRequestProperty("Authorization", Token);
+        con.setRequestProperty("Authorization","BEARER " + Token);
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream()));
 		String inputLine;
 
 		while ((inputLine = in.readLine()) != null) {
-			response += inputLine;
-		
-		System.out.println("response is " + response);
+			response += inputLine;	
 			
 		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		   TypeReference<HashMap<String,Object>> typeRef 
+           = new TypeReference<HashMap<String,Object>>() {};
+
+             HashMap<String,Object> hashmap = mapper.readValue(response, typeRef); 
+		
+			System.out.println("the service value is " + hashmap);
 			
-		return response;
+				
+		  return hashmap;
 
 	}
 	

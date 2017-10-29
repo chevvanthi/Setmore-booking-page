@@ -10,8 +10,8 @@
 	 
 	  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-	  <link rel = "stylesheet" type="text/css" href = "designPage.css" /> 
-	  <script src="/jsFiles/BookingPage.js"></script>  
+	  <link rel = "stylesheet" type="text/css" href = "DesignFiles/design.css" /> 
+	  <script src="/JSFiles/BookingPage.js"></script>  
 	  
 </head>
 
