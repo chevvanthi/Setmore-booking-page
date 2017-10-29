@@ -26,7 +26,7 @@ $(document).ready(function(){
 										 serviceDuration        = v.duration;
 										 serviceCost            = v.cost;
 										 serviceKey             = v.key;
-										 staffKeys[]            = v.staff_keys;
+										 staffKeys            = v.staff_keys;
 
 										 console.log("the value is " + JSON.stringify(serviceName)  +"   " + JSON.stringify(serviceDuration) + " " + JSON.stringify(serviceCost) + "service key" + JSON.stringify(serviceKey)); 
 										
