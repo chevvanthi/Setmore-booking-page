@@ -1,4 +1,4 @@
-var Model = (function($,window) {
+	var Model = (function($,window,document) {
 
 		var makeAjaxRequest = function(request) {
 
@@ -12,6 +12,13 @@ var Model = (function($,window) {
 				};
 
 				if(request.headers) {
+					ajaxOptions.beforeSend = function(xhr) {
+						for(var key in request.headers)
+							xhr.setRequestHeader(key, request.headers[key]);
+					}
+				}
+
+				if(request.headers) {
 					ajaxOptions.headers = request.headers;
 				}
 
@@ -23,8 +30,9 @@ var Model = (function($,window) {
 			}
 
 		};
-		
+
 		return {
-			makeAjaxRequest : makeAjaxRequest
+			makeAjaxRequest: makeAjaxRequest,
 		}
-})(window);
+
+	})(jQuery,window);
