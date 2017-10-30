@@ -7,10 +7,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import javax.net.ssl.HttpsURLConnection;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fullauth.api.enums.OauthExpiryType;
+import com.fullauth.api.model.oauth.OauthAccessToken;
+import com.fullauth.api.service.FullAuthOauthService;
 
 
 public class URLFetchClass {
@@ -23,10 +26,33 @@ public class URLFetchClass {
         	urlObj.getServiceDetails(token);
         	
         }
+        
+        /**
+         * 
+         * @param refreshToken
+         * @return access token
+         */
+        private OauthAccessToken getAccessTokenByRefreshToken(String refreshToken){
+    		OauthAccessToken token = null;
+    		try{
+    			FullAuthOauthService authService = FullAuthOauthService.builder()
+    					.authDomain(WorkConstants.fullAuthURL)
+    					.clientId(WorkConstants.FULLAUTH_CLIENT_ID)
+    					.clientSecret(WorkConstants.FULLAUTH_CLIENT_SECRET)
+    					.build();
+
+    			token = authService.refreshAccessToken(refreshToken, OauthExpiryType.LONG);
+    			token.setRefreshToken(refreshToken);
+    		}catch(Exception e){
+    			e.printStackTrace();
+    		}
+    		return token;
+    	}
 	
-     public String getAccessToken() throws IOException, JSONException{
+        //TODO : add try-catch
+     public String getAccessToken() throws Exception{
         	
-        	   URL obj               = new URL("https://developer.setmore.com/api/v1/o/oauth2/token?refreshToken=7af7d05d50SB3I6gYN6AosocWO_N3Tquz1s0w4_vNvnw8");
+        	   /*URL obj               = new URL("https://developer.setmore.com/api/v1/o/oauth2/token?refreshToken=7af7d05d50SB3I6gYN6AosocWO_N3Tquz1s0w4_vNvnw8");
         	   HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         	   con.setRequestMethod("GET");
         	   con.setRequestProperty("Content-Type", "application/json");
@@ -45,11 +71,17 @@ public class URLFetchClass {
         	    TypeReference<HashMap<String,Object>> typeRef 
         	            = new TypeReference<HashMap<String,Object>>() {};
 
-        	    HashMap<String,Object> hashmap = objectmapper.readValue(response, typeRef); 
+        	    HashMap<String,Object> hashmap = objectmapper.readValue(response, typeRef); */
+    	 
+    	 		String url = WorkConstants.setmoreURL+"/o/oauth2/token?refreshToken=7af7d05d50SB3I6gYN6AosocWO_N3Tquz1s0w4_vNvnw8";
+    	 		
+    	 		String response = URLFetchUtil.makeHttpRequest(url, null, "GET", "application/json");
+    	 		
+    	 		HashMap<String,Object> responseMap = (HashMap) UtilityMethods.getObjectFromJsonString(response, HashMap.class);
         	 
         	    String accessToken = "";
         	   
-        	    for(Map.Entry<String, Object> entry : hashmap.entrySet()){
+        	    for(Map.Entry<String, Object> entry : responseMap.entrySet()){
         	    	
         	    	String key = entry.getKey();
         	    	
@@ -76,13 +108,13 @@ public class URLFetchClass {
         	   
            }
 
-	public HashMap<String,Object> getServiceDetails(String Token) throws Exception {
+     //TODO : add try-catch
+	public Map<String,Object> getServiceDetails(String token) throws Exception {
 		
-		String url = "https://developer.setmore.com/api/v1/bookingapi/services";
-		String response="";
+		String url = WorkConstants.setmoreURL+"/bookingapi/services";
 		
-		System.out.println("the value of token inseide the get service " + Token);
-		URL obj = new URL(url);
+		System.out.println("the value of token inseide the get service " + token);
+		/*URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
 		con.setRequestMethod("GET");		
@@ -95,19 +127,23 @@ public class URLFetchClass {
 		while ((inputLine = in.readLine()) != null) {
 			response += inputLine;	
 			
-		}
+		}*/
 		
-		ObjectMapper mapper = new ObjectMapper();
+		String response = URLFetchUtil.authenticationHttpRequest(url, null, "GET", "application/json", token);
+		
+		/*ObjectMapper mapper = new ObjectMapper();
 		
 		   TypeReference<HashMap<String,Object>> typeRef 
            = new TypeReference<HashMap<String,Object>>() {};
 
              HashMap<String,Object> hashmap = mapper.readValue(response, typeRef); 
 		
-			System.out.println("the service value is " + hashmap);
+			System.out.println("the service value is " + hashmap);*/
+		
+		Map<String,Object> responseMap = (Map) UtilityMethods.getObjectFromJsonString(response, HashMap.class);
 			
 				
-		  return hashmap;
+		  return responseMap;
 
 	}
 	
